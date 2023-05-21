@@ -1,0 +1,15 @@
+--2023-03-02 22:21:12--  https://upload.wikimedia.org/wikipedia/commons/6/6e/Golde33443.jpg
+Resolving upload.wikimedia.org (upload.wikimedia.org)... 103.102.166.240
+Connecting to upload.wikimedia.org (upload.wikimedia.org)|103.102.166.240|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 212652 (208K) [image/jpeg]
+Saving to: ‘Golde33443.jpg’
+
+     0K .......... .......... .......... .......... .......... 24%  460K 0s
+    50K .......... .......... .......... .......... .......... 48%  979K 0s
+   100K .......... .......... .......... .......... .......... 72% 1.11M 0s
+   150K .......... .......... .......... .......... .......... 96% 2.15M 0s
+   200K .......                                               100% 34.2M=0.2s
+
+2023-03-02 22:21:12 (916 KB/s) - ‘Golde33443.jpg’ saved [212652/212652]
+

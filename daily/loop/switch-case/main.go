@@ -1,0 +1,1 @@
+package mainimport "fmt"func main() {	n := "GGEZ"	switch n {	case "WYM":		fmt.Println("THIS IS WYM and SHOULD NOT PRINT")	case "GOLAND":		fmt.Println("THIS SHOULD NOT PRINT")		fallthrough	case "MIAMA", "GGEZ":		fmt.Println("THIS SHOULD PRINT")	}}

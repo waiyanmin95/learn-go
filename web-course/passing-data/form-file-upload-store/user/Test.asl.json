@@ -1,0 +1,241 @@
+{
+  "Comment": "An example demonstrates how to use Athena to query a target table to get current data, then update it with new data from other sources.",
+  "StartAt": "Start Activity table Crawler",
+  "States": {
+    "Start Activity table Crawler": {
+      "Type": "Task",
+      "Next": "Wait",
+      "Parameters": {
+        "Name": "activity"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:glue:startCrawler"
+    },
+    "Wait": {
+      "Type": "Wait",
+      "Seconds": 30,
+      "Next": "Get Crawler Status"
+    },
+    "Get Crawler Status": {
+      "Type": "Task",
+      "Next": "Choice",
+      "Parameters": {
+        "Name": "activity"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:glue:getCrawler"
+    },
+    "Choice": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.Crawler.State",
+          "StringEquals": "READY",
+          "Next": "Get GetTodayLastRecord Query"
+        }
+      ],
+      "Default": "Wait"
+    },
+    "Choice (1)": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.Crawler.State",
+          "StringEquals": "READY",
+          "Next": "Get MTD Data Check Query"
+        }
+      ],
+      "Default": "Wait (1)"
+    },
+    "Get GetTodayLastRecord Query": {
+      "Type": "Task",
+      "Next": "Get Latest Record of today",
+      "Parameters": {
+        "NamedQueryId": "cfe8ce5d-eb8b-4985-b55e-7fd2887a13dd"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:athena:getNamedQuery"
+    },
+    "Get Latest Record of today": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::athena:startQueryExecution",
+      "Parameters": {
+        "QueryString.$": "$.NamedQuery.QueryString",
+        "WorkGroup": "primary",
+        "ResultConfiguration": {
+          "OutputLocation": "s3://asc-billing-dev/exec-result/"
+        }
+      },
+      "Next": "Wait 10 sec"
+    },
+    "Wait 10 sec": {
+      "Type": "Wait",
+      "Seconds": 10,
+      "Next": "Athena GetQueryResults"
+    },
+    "Athena GetQueryResults": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::athena:getQueryResults",
+      "Parameters": {
+        "MaxResults": 10,
+        "QueryExecutionId.$": "$.QueryExecutionId"
+      },
+      "Next": "Check result"
+    },
+    "Check result": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.ResultSet.Rows[1]",
+          "IsPresent": true,
+          "Comment": "All of yesterday data is exists",
+          "Next": "Get ExportMonthToDate Query string"
+        }
+      ],
+      "Default": "Wait 15 minutes"
+    },
+    "Wait 15 minutes": {
+      "Type": "Wait",
+      "Seconds": 900,
+      "Next": "Start Activity table Crawler"
+    },
+    "Get ExportMonthToDate Query string": {
+      "Type": "Task",
+      "Next": "Export yesterday month to date",
+      "Parameters": {
+        "NamedQueryId": "78f5d4e8-4312-44c0-a097-255da86070af"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:athena:getNamedQuery"
+    },
+    "Export yesterday month to date": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::athena:startQueryExecution.sync",
+      "Parameters": {
+        "QueryString.$": "$.NamedQuery.QueryString",
+        "WorkGroup": "primary",
+        "ResultConfiguration": {
+          "OutputLocation": "s3://asc-billing-dev/exec-result/"
+        }
+      },
+      "Next": "Get ExportMonthToDate (total) Query string"
+    },
+    "Get ExportMonthToDate (total) Query string": {
+      "Type": "Task",
+      "Next": "Export yesterday month to date (total)",
+      "Parameters": {
+        "NamedQueryId": "78f5d4e8-4312-44c0-a097-255da86070af"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:athena:getNamedQuery"
+    },
+    "Export yesterday month to date (total)": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::athena:startQueryExecution.sync",
+      "Parameters": {
+        "QueryString.$": "$.NamedQuery.QueryString",
+        "WorkGroup": "primary",
+        "ResultConfiguration": {
+          "OutputLocation": "s3://asc-billing-dev/exec-result/"
+        }
+      },
+      "Next": "Start month to date table Crawler"
+    },
+    "Start month to date table Crawler": {
+      "Type": "Task",
+      "Next": "Wait (1)",
+      "Parameters": {
+        "Name": "month_to_date_dev"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:glue:startCrawler"
+    },
+    "Wait (1)": {
+      "Type": "Wait",
+      "Seconds": 30,
+      "Next": "Get Month to date Crawler Status"
+    },
+    "Get Month to date Crawler Status": {
+      "Type": "Task",
+      "Next": "Choice (1)",
+      "Parameters": {
+        "Name": "month_to_date_dev"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:glue:getCrawler"
+    },
+    "Get MTD Data Check Query": {
+      "Type": "Task",
+      "Parameters": {
+        "NamedQueryId": "7fce1cb1-0ea8-4189-bb08-a5e127370e36"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:athena:getNamedQuery",
+      "Next": "Get latest MTD data"
+    },
+    "Get latest MTD data": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::athena:startQueryExecution",
+      "Parameters": {
+        "QueryString.$": "$.NamedQuery.QueryString",
+        "WorkGroup": "primary",
+        "ResultConfiguration": {
+          "OutputLocation": "s3://asc-billing-dev/exec-result/"
+        }
+      },
+      "Next": "Wait 10 sec (2)"
+    },
+    "Wait 10 sec (2)": {
+      "Type": "Wait",
+      "Seconds": 10,
+      "Next": "Athena GetQueryResults (1)"
+    },
+    "Athena GetQueryResults (1)": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::athena:getQueryResults",
+      "Parameters": {
+        "MaxResults": 2,
+        "QueryExecutionId.$": "$.QueryExecutionId"
+      },
+      "Next": "Check Month To Date Data"
+    },
+    "Check Month To Date Data": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "And": [
+            {
+              "Variable": "$.ResultSet.Rows",
+              "IsPresent": true
+            },
+            {
+              "Variable": "$.ResultSet.Rows[1]",
+              "IsPresent": true
+            },
+            {
+              "Variable": "$.ResultSet.Rows[1][0]",
+              "StringEqualsPath": "$.ResultSet.Rows[1][1]"
+            }
+          ],
+          "Next": "Get Export Month to Date Query string"
+        }
+      ],
+      "Default": "Do nothing"
+    },
+    "Get Export Month to Date Query string": {
+      "Type": "Task",
+      "Next": "Export Month to Date data to MAU",
+      "Parameters": {
+        "NamedQueryId": "c299be03-3470-4f40-af39-86ba144d2850"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:athena:getNamedQuery"
+    },
+    "Export Month to Date data to MAU": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::athena:startQueryExecution.sync",
+      "Parameters": {
+        "QueryString.$": "$.NamedQuery.QueryString",
+        "WorkGroup": "primary",
+        "ResultConfiguration": {
+          "OutputLocation": "s3://asc-billing-dev/exec-result/"
+        }
+      },
+      "End": true
+    },
+    "Do nothing": {
+      "Type": "Succeed"
+    }
+  }
+}
