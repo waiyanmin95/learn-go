@@ -1,1 +1,0 @@
-sum(mongodb_rs_members_health{instance="asc-mongodb-0-a.ekosdk.local:9216",rs_nm="rs0"})

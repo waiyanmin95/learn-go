@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 func main() {
-	x := 6789
+	x := 43
 	if x == 40 {
 		fmt.Println("Value is 40")
 	} else if x == 42 {
