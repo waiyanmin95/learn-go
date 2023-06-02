@@ -15,18 +15,20 @@ func main() {
 
 	go func() {
 		time.Sleep(d1 * time.Millisecond)
+		// Send to channel
 		ch1 <- 41
 	}()
 
 	go func() {
 		time.Sleep(d2 * time.Millisecond)
+		// Send to channel
 		ch2 <- 42
 	}()
 
 	select {
-	case v1 := <-ch1:
+	case v1 := <-ch1: // Receive from channel
 		fmt.Println("Value from channel 1", v1)
-	case v2 := <-ch2:
+	case v2 := <-ch2: // Receive from channel
 		fmt.Println("Value from channel 2", v2)
 	}
 }
