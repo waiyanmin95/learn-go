@@ -3,16 +3,14 @@ package main
 import "fmt"
 
 func main() {
-	n := int32(6)
-	nn := int(n)
-	for i := 0; i < nn; i++ {
-		for j := 0; j < nn-i-1; j++ {
-			fmt.Print(" ")
+	for i := 0; i < 5; i++ {
+		for j := 0; j < 5-i; j++ {
+			fmt.Print("")
 		}
 		for j := 0; j <= i; j++ {
-			fmt.Print("#")
+			fmt.Print("*")
 		}
-		fmt.Println()
+		fmt.Println("")
 	}
 }
 
@@ -23,7 +21,7 @@ func main() {
 //			//fmt.Printf("Inner 1, G = %d, I = %d", g, i)
 //		}
 //		for j := 0; j < i; j++ {
-//			fmt.Printf("#")
+//			fmt.Printf("* ")
 //			//fmt.Printf("Inner 2, J = %d, I = %d", j, i)
 //		}
 //
@@ -34,16 +32,16 @@ func main() {
 //func main() {
 //	for i := 1; i < 6; i++ {
 //		for j := 0; j < i; j++ {
-//			fmt.Print("#")
+//			fmt.Print("* ")
 //		}
 //		fmt.Println(" ")
 //	}
 //}
 
 //func main() {
-//	for i := 5; i > 0; i-- {
-//		for j := 0; j < i; j++ {
-//			fmt.Printf("#")
+//	for i := 0; i < 5; i++ {
+//		for j := 0; j < 5-i; j++ {
+//			fmt.Printf("* ")
 //			//fmt.Printf("Inner 2, J = %d, I = %d", j, i)
 //		}
 //
