@@ -8,7 +8,7 @@ import (
 
 func main() {
 	fmt.Println("Number of CPUs", runtime.NumCPU())
-	fmt.Println("GO Routine", runtime.NumGoroutine())
+	fmt.Println("GO Routines", runtime.NumGoroutine())
 	counter := 0
 
 	const (
@@ -29,11 +29,10 @@ func main() {
 			mu.Unlock()
 			wg.Done()
 		}()
-		fmt.Println("GO Routine IN LOOP", runtime.NumGoroutine())
+		fmt.Println("GO Routines IN LOOP", runtime.NumGoroutine())
 	}
 
 	wg.Wait()
-	fmt.Println("GO Routine", runtime.NumGoroutine())
+	fmt.Println("GO Routines", runtime.NumGoroutine())
 	fmt.Println("Count", counter)
-
 }
