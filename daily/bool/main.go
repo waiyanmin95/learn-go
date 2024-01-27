@@ -6,4 +6,5 @@ func main() {
 	a := 100
 	b := 1001
 	fmt.Println(a == b)
+	fmt.Println(a != b)
 }
